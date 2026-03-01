@@ -53,17 +53,22 @@ export default function ProfilePage() {
     setError(null);
     setSuccess(false);
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
+    // Use the PATCH API route — avoids Supabase client update() inference issues
+    const res = await fetch("/api/profiles", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         full_name: profile.full_name,
         bio: profile.bio,
         gender: profile.gender,
         preference: profile.preference,
         birth_date: profile.birth_date,
         location: profile.location,
-      })
-      .eq("id", profile.id);
+      }),
+    });
+
+    const json = await res.json();
+    const error = res.ok ? null : { message: json.error ?? "Update failed" };
 
     setSaving(false);
     if (error) { setError(error.message); return; }
@@ -95,10 +100,11 @@ export default function ProfilePage() {
       .from("avatars")
       .getPublicUrl(filePath);
 
-    await supabase
-      .from("profiles")
-      .update({ profile_picture_url: publicUrl })
-      .eq("id", profile.id);
+    await fetch("/api/profiles", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ profile_picture_url: publicUrl }),
+    });
 
     setProfile((prev) => prev ? { ...prev, profile_picture_url: publicUrl } : prev);
     setUploading(false);
