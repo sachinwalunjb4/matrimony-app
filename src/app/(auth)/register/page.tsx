@@ -32,32 +32,40 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
 
-    // 1. Create auth user
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
+    // Call the server API route which uses the service-role key to:
+    // 1. Create the auth user (auto-confirmed)
+    // 2. Insert the profile row (bypasses RLS safely on the server)
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+        full_name: fullName,
+        gender,
+        preference,
+        birth_date: birthDate,
+        location,
+        bio: bio || undefined,
+      }),
     });
 
-    if (signUpError || !data.user) {
-      setError(signUpError?.message ?? "Sign-up failed. Please try again.");
+    const json = await res.json();
+
+    if (!res.ok) {
+      setError(json.error ?? "Registration failed. Please try again.");
       setLoading(false);
       return;
     }
 
-    // 2. Insert profile row
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: data.user.id,
-      full_name: fullName,
-      gender,
-      preference,
-      birth_date: birthDate,
-      location,
-      bio: bio || null,
-      profile_picture_url: null,
+    // Sign the user in on the client side after server-side creation
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
 
-    if (profileError) {
-      setError(profileError.message);
+    if (signInError) {
+      setError(signInError.message);
       setLoading(false);
       return;
     }
