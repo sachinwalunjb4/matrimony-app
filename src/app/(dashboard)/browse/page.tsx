@@ -28,7 +28,7 @@ export default async function BrowsePage() {
   // Fetch all users I have already interacted with (to exclude from feed)
   const { data: seen } = await supabase
     .from("interests")
-    .select("to_user_id")
+    .select("*")
     .eq("from_user_id", user.id);
 
   const seenIds = [user.id, ...(seen?.map((r) => r.to_user_id) ?? [])];
