@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { Match, Message, Database } from "@/types/database";
+
+type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
 
 // GET /api/messages?matchId=xxx — fetches messages for a match
 export async function GET(request: Request) {
@@ -18,17 +21,19 @@ export async function GET(request: Request) {
   }
 
   // Verify user is a participant of this match
-  const { data: match } = await supabase
+  const { data: matchRaw } = await supabase
     .from("matches")
     .select("user_a_id, user_b_id")
     .eq("id", matchId)
     .single();
 
+  const match = matchRaw as Pick<Match, "user_a_id" | "user_b_id"> | null;
+
   if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { data, error } = await supabase
+  const { data: messagesRaw, error } = await supabase
     .from("messages")
     .select("*")
     .eq("match_id", matchId)
@@ -38,7 +43,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(messagesRaw as Message[] | null);
 }
 
 // POST /api/messages — send a message to a match
@@ -58,19 +63,27 @@ export async function POST(request: Request) {
   }
 
   // Verify the user is part of this match (defence-in-depth; RLS also enforces this)
-  const { data: match } = await supabase
+  const { data: matchRaw } = await supabase
     .from("matches")
     .select("user_a_id, user_b_id")
     .eq("id", matchId)
     .single();
 
+  const match = matchRaw as Pick<Match, "user_a_id" | "user_b_id"> | null;
+
   if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { data, error } = await supabase
+  const insertPayload: MessageInsert = {
+    match_id: matchId,
+    sender_id: user.id,
+    content: content.trim(),
+  };
+
+  const { data: msgRaw, error } = await supabase
     .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, content: content.trim() })
+    .insert(insertPayload as unknown as never)
     .select()
     .single();
 
@@ -78,5 +91,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data, { status: 201 });
+  return NextResponse.json(msgRaw as Message, { status: 201 });
 }

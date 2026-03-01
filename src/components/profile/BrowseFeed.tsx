@@ -4,7 +4,9 @@ import { useState } from "react";
 import { X, Heart, MapPin, Calendar } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import type { Profile } from "@/types/database";
+import type { Profile, Match, Database } from "@/types/database";
+
+type InterestUpsert = Database["public"]["Tables"]["interests"]["Insert"];
 
 function calculateAge(birthDate: string): number {
   const today = new Date();
@@ -106,20 +108,23 @@ export default function BrowseFeed({
   async function handleAction(action: "like" | "pass") {
     if (!current) return;
 
-    await supabase.from("interests").upsert({
+    const interestPayload: InterestUpsert = {
       from_user_id: currentUserId,
       to_user_id: current.id,
       action,
-    });
+    };
+    await supabase.from("interests").upsert(interestPayload as unknown as never);
 
     if (action === "like") {
       // Check if it created a match
-      const { data: match } = await supabase
+      const { data: matchRaw } = await supabase
         .from("matches")
         .select("id")
         .or(`user_a_id.eq.${currentUserId},user_b_id.eq.${currentUserId}`)
         .or(`user_a_id.eq.${current.id},user_b_id.eq.${current.id}`)
         .single();
+
+      const match = matchRaw as Pick<Match, "id"> | null;
 
       if (match) {
         showToast(`🎉 It's a match with ${current.full_name}!`);
