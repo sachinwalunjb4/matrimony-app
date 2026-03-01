@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { Profile, Database } from "@/types/database";
+
+type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 
 // GET /api/profiles — returns the current user's profile
 export async function GET() {
@@ -20,7 +23,7 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(data as Profile);
 }
 
 // PATCH /api/profiles — update the current user's profile
@@ -35,14 +38,16 @@ export async function PATCH(request: Request) {
   const body = await request.json();
 
   // Whitelist updatable fields — never let the client touch id/created_at
-  const allowed = ["full_name", "bio", "gender", "preference", "birth_date", "location"];
+  const allowed: (keyof ProfileUpdate)[] = [
+    "full_name", "bio", "gender", "preference", "birth_date", "location", "profile_picture_url",
+  ];
   const update = Object.fromEntries(
-    Object.entries(body).filter(([key]) => allowed.includes(key))
-  );
+    Object.entries(body).filter(([key]) => allowed.includes(key as keyof ProfileUpdate))
+  ) as ProfileUpdate;
 
   const { data, error } = await supabase
     .from("profiles")
-    .update(update)
+    .update(update as unknown as never)
     .eq("id", user.id)
     .select()
     .single();
@@ -51,5 +56,5 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(data as Profile);
 }
