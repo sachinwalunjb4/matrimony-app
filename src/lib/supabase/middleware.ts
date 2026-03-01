@@ -34,7 +34,10 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAuthRoute =
     pathname.startsWith("/login") || pathname.startsWith("/register");
-  const isPublicRoute = pathname === "/" || isAuthRoute;
+  // API auth routes (register, future password-reset etc.) must be public —
+  // they are called before the user has a session.
+  const isPublicRoute =
+    pathname === "/" || isAuthRoute || pathname.startsWith("/api/auth/");
 
   // Redirect unauthenticated users away from protected routes
   if (!user && !isPublicRoute) {
