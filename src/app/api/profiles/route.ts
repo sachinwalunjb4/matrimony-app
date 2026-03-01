@@ -23,7 +23,7 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data as Profile);
+  return NextResponse.json(data as unknown as Profile);
 }
 
 // PATCH /api/profiles — update the current user's profile
@@ -56,5 +56,5 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data as Profile);
+  return NextResponse.json(data as unknown as Profile);
 }

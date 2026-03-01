@@ -30,7 +30,7 @@ export default async function MessagesPage() {
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
     .order("created_at", { ascending: false });
 
-  const matches = matchesRaw as MatchWithMessages[] | null;
+  const matches = matchesRaw as unknown as MatchWithMessages[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">

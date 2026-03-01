@@ -25,7 +25,7 @@ export default async function MatchesPage() {
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
     .order("created_at", { ascending: false });
 
-  const matches = matchesRaw as MatchWithProfiles[] | null;
+  const matches = matchesRaw as unknown as MatchWithProfiles[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">

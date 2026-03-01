@@ -11,14 +11,13 @@ export default async function BrowsePage() {
 
   if (!user) return null;
 
-  // Fetch the current user's profile to know their preference
   const { data: myProfileRaw } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  const myProfile = myProfileRaw as Profile | null;
+  const myProfile = myProfileRaw as unknown as Profile | null;
 
   if (!myProfile) {
     return (
@@ -28,16 +27,14 @@ export default async function BrowsePage() {
     );
   }
 
-  // Fetch all users I have already interacted with (to exclude from feed)
   const { data: seenRaw } = await supabase
     .from("interests")
     .select("*")
     .eq("from_user_id", user.id);
 
-  const seen = seenRaw as Interest[] | null;
+  const seen = seenRaw as unknown as Interest[] | null;
   const seenIds = [user.id, ...(seen?.map((r) => r.to_user_id) ?? [])];
 
-  // Build the gender filter based on preference
   const genderFilter =
     myProfile.preference === "any"
       ? ["male", "female", "other"]
@@ -50,7 +47,7 @@ export default async function BrowsePage() {
     .not("id", "in", `(${seenIds.join(",")})`)
     .limit(20);
 
-  const candidates = candidatesRaw as Profile[] | null;
+  const candidates = candidatesRaw as unknown as Profile[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">

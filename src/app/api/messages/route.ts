@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     .eq("id", matchId)
     .single();
 
-  const match = matchRaw as Pick<Match, "user_a_id" | "user_b_id"> | null;
+  const match = matchRaw as unknown as Pick<Match, "user_a_id" | "user_b_id"> | null;
 
   if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(messagesRaw as Message[] | null);
+  return NextResponse.json(messagesRaw as unknown as Message[] | null);
 }
 
 // POST /api/messages — send a message to a match
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     .eq("id", matchId)
     .single();
 
-  const match = matchRaw as Pick<Match, "user_a_id" | "user_b_id"> | null;
+  const match = matchRaw as unknown as Pick<Match, "user_a_id" | "user_b_id"> | null;
 
   if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -91,5 +91,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(msgRaw as Message, { status: 201 });
+  return NextResponse.json(msgRaw as unknown as Message, { status: 201 });
 }

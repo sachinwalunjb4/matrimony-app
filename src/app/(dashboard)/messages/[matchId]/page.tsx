@@ -29,7 +29,7 @@ export default async function ChatPage({ params }: PageProps) {
     .eq("id", matchId)
     .single();
 
-  const match = matchRaw as MatchWithProfiles | null;
+  const match = matchRaw as unknown as MatchWithProfiles | null;
 
   if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     notFound();
@@ -44,7 +44,7 @@ export default async function ChatPage({ params }: PageProps) {
     .eq("match_id", matchId)
     .order("created_at", { ascending: true });
 
-  const messages = messagesRaw as Message[] | null;
+  const messages = messagesRaw as unknown as Message[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-0 h-[calc(100vh-56px)] flex flex-col">
