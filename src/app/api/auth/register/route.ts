@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import type { Database } from "@/types/database";
-import type { Gender, Preference } from "@/types/database";
+import type { Database, Gender, Preference } from "@/types/database";
+
+type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
 
 // Service-role client — bypasses RLS, server-only, never sent to the browser
 function createAdminClient() {
@@ -47,8 +48,9 @@ export async function POST(request: Request) {
     );
   }
 
-  // 2. Insert the profile using the admin client (bypasses RLS safely on the server)
-  const { error: profileError } = await admin.from("profiles").insert({
+  // 2. Insert the profile — payload is typed via ProfileInsert for safety,
+  //    then cast to unknown to bypass the Supabase client's broken inference.
+  const profilePayload: ProfileInsert = {
     id: authData.user.id,
     full_name,
     gender,
@@ -57,7 +59,11 @@ export async function POST(request: Request) {
     location,
     bio: bio || null,
     profile_picture_url: null,
-  });
+  };
+
+  const { error: profileError } = await admin
+    .from("profiles")
+    .insert(profilePayload as unknown as never);
 
   if (profileError) {
     // Roll back: delete the auth user so we don't leave orphaned accounts
