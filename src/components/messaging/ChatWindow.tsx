@@ -5,7 +5,9 @@ import Image from "next/image";
 import { Send, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { Message } from "@/types/database";
+import type { Message, Database } from "@/types/database";
+
+type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface ChatWindowProps {
@@ -78,11 +80,14 @@ export default function ChatWindow({
     setInput("");
     setSending(true);
 
-    const { error } = await supabase.from("messages").insert({
+    const msgPayload: MessageInsert = {
       match_id: matchId,
       sender_id: currentUserId,
       content: text,
-    });
+    };
+    const { error } = await supabase
+      .from("messages")
+      .insert(msgPayload as unknown as never);
 
     if (error) {
       // Re-populate input if insert failed
