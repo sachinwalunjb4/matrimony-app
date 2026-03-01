@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import BrowseFeed from "@/components/profile/BrowseFeed";
+import type { Interest } from "@/types/database";
 
 export default async function BrowsePage() {
   const supabase = await createClient();
@@ -31,7 +32,7 @@ export default async function BrowsePage() {
     .select("*")
     .eq("from_user_id", user.id);
 
-  const seenIds = [user.id, ...(seen?.map((r) => r.to_user_id) ?? [])];
+  const seenIds = [user.id, ...((seen as Interest[] | null)?.map((r) => r.to_user_id) ?? [])];
 
   // Build the gender filter based on preference
   const genderFilter =
