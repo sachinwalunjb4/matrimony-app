@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import BrowseFeed from "@/components/profile/BrowseFeed";
-import type { Interest } from "@/types/database";
+import type { Profile, Interest } from "@/types/database";
 
 export default async function BrowsePage() {
   const supabase = await createClient();
@@ -12,11 +12,13 @@ export default async function BrowsePage() {
   if (!user) return null;
 
   // Fetch the current user's profile to know their preference
-  const { data: myProfile } = await supabase
+  const { data: myProfileRaw } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
+
+  const myProfile = myProfileRaw as Profile | null;
 
   if (!myProfile) {
     return (
@@ -27,12 +29,13 @@ export default async function BrowsePage() {
   }
 
   // Fetch all users I have already interacted with (to exclude from feed)
-  const { data: seen } = await supabase
+  const { data: seenRaw } = await supabase
     .from("interests")
     .select("*")
     .eq("from_user_id", user.id);
 
-  const seenIds = [user.id, ...((seen as Interest[] | null)?.map((r) => r.to_user_id) ?? [])];
+  const seen = seenRaw as Interest[] | null;
+  const seenIds = [user.id, ...(seen?.map((r) => r.to_user_id) ?? [])];
 
   // Build the gender filter based on preference
   const genderFilter =
@@ -40,12 +43,14 @@ export default async function BrowsePage() {
       ? ["male", "female", "other"]
       : [myProfile.preference];
 
-  const { data: candidates } = await supabase
+  const { data: candidatesRaw } = await supabase
     .from("profiles")
     .select("*")
     .in("gender", genderFilter)
     .not("id", "in", `(${seenIds.join(",")})`)
     .limit(20);
+
+  const candidates = candidatesRaw as Profile[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">

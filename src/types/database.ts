@@ -6,6 +6,8 @@ export type Gender = "male" | "female" | "other";
 export type Preference = "male" | "female" | "any";
 export type InterestAction = "like" | "pass";
 
+// ── Plain DB row types (only real columns — no join fields) ───
+
 export interface Profile {
   id: string;
   full_name: string;
@@ -27,13 +29,12 @@ export interface Interest {
   created_at: string;
 }
 
+// Match — only real DB columns. Join results use MatchWithProfiles below.
 export interface Match {
   id: string;
   user_a_id: string;
   user_b_id: string;
   created_at: string;
-  // Joined field — populated in queries
-  other_profile?: Profile;
 }
 
 export interface Message {
@@ -44,10 +45,23 @@ export interface Message {
   created_at: string;
 }
 
+// ── Joined query result types (not DB rows — used only in component props) ──
+
+export type OtherProfile = Pick<
+  Profile,
+  "id" | "full_name" | "profile_picture_url" | "gender" | "location"
+>;
+
+export interface MatchWithProfiles extends Match {
+  profile_a: OtherProfile | null;
+  profile_b: OtherProfile | null;
+}
+
 // ──────────────────────────────────────────────────────────────
 // Supabase Database type (used with createClient<Database>)
 // All five keys on the schema object are required by @supabase/supabase-js v2
 // to satisfy GenericSchema — omitting any causes Insert/Update to collapse to `never`.
+// Row types must contain ONLY real database columns.
 // ──────────────────────────────────────────────────────────────
 export type Database = {
   public: {

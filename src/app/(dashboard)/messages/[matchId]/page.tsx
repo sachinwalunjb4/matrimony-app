@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import ChatWindow from "@/components/messaging/ChatWindow";
+import type { MatchWithProfiles, Message } from "@/types/database";
 
 interface PageProps {
   params: Promise<{ matchId: string }>;
@@ -16,8 +17,7 @@ export default async function ChatPage({ params }: PageProps) {
 
   if (!user) return null;
 
-  // Verify the match exists and the current user is a participant
-  const { data: match } = await supabase
+  const { data: matchRaw } = await supabase
     .from("matches")
     .select(`
       id,
@@ -29,29 +29,29 @@ export default async function ChatPage({ params }: PageProps) {
     .eq("id", matchId)
     .single();
 
-  if (
-    !match ||
-    (match.user_a_id !== user.id && match.user_b_id !== user.id)
-  ) {
+  const match = matchRaw as MatchWithProfiles | null;
+
+  if (!match || (match.user_a_id !== user.id && match.user_b_id !== user.id)) {
     notFound();
   }
 
   const otherProfile =
     match.user_a_id === user.id ? match.profile_b : match.profile_a;
 
-  // Fetch message history
-  const { data: messages } = await supabase
+  const { data: messagesRaw } = await supabase
     .from("messages")
     .select("*")
     .eq("match_id", matchId)
     .order("created_at", { ascending: true });
+
+  const messages = messagesRaw as Message[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-0 h-[calc(100vh-56px)] flex flex-col">
       <ChatWindow
         matchId={matchId}
         currentUserId={user.id}
-        otherProfile={otherProfile as { id: string; full_name: string; profile_picture_url: string | null; gender: string }}
+        otherProfile={otherProfile!}
         initialMessages={messages ?? []}
       />
     </div>

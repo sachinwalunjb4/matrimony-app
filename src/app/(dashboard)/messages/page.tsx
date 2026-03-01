@@ -2,6 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
+import type { MatchWithProfiles, OtherProfile, Message } from "@/types/database";
+
+type MatchWithMessages = MatchWithProfiles & {
+  messages: Pick<Message, "content" | "created_at" | "sender_id">[] | null;
+};
 
 export default async function MessagesPage() {
   const supabase = await createClient();
@@ -11,8 +16,7 @@ export default async function MessagesPage() {
 
   if (!user) return null;
 
-  // Fetch all matches with the other user profile and the latest message
-  const { data: matches } = await supabase
+  const { data: matchesRaw } = await supabase
     .from("matches")
     .select(`
       id,
@@ -25,6 +29,8 @@ export default async function MessagesPage() {
     `)
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
     .order("created_at", { ascending: false });
+
+  const matches = matchesRaw as MatchWithMessages[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">
@@ -42,18 +48,20 @@ export default async function MessagesPage() {
       ) : (
         <div className="space-y-2 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
           {matches.map((match) => {
-            const other =
-              match.user_a_id === user.id
-                ? (match.profile_b as { id: string; full_name: string; profile_picture_url: string | null; gender: string })
-                : (match.profile_a as { id: string; full_name: string; profile_picture_url: string | null; gender: string });
+            const other: OtherProfile | null =
+              match.user_a_id === user.id ? match.profile_b : match.profile_a;
 
             if (!other) return null;
 
-            // Get the latest message
-            const msgs = match.messages as Array<{ content: string; created_at: string; sender_id: string }> | null;
-            const lastMsg = msgs && msgs.length > 0
-              ? msgs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
-              : null;
+            const msgs = match.messages ?? [];
+            const lastMsg =
+              msgs.length > 0
+                ? [...msgs].sort(
+                    (a, b) =>
+                      new Date(b.created_at).getTime() -
+                      new Date(a.created_at).getTime()
+                  )[0]
+                : null;
 
             return (
               <Link

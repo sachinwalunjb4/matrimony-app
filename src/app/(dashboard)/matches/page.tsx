@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, MessageCircle, MapPin } from "lucide-react";
+import type { MatchWithProfiles, OtherProfile } from "@/types/database";
 
 export default async function MatchesPage() {
   const supabase = await createClient();
@@ -11,8 +12,7 @@ export default async function MatchesPage() {
 
   if (!user) return null;
 
-  // Fetch all matches and join the other user's profile
-  const { data: matches } = await supabase
+  const { data: matchesRaw } = await supabase
     .from("matches")
     .select(`
       id,
@@ -24,6 +24,8 @@ export default async function MatchesPage() {
     `)
     .or(`user_a_id.eq.${user.id},user_b_id.eq.${user.id}`)
     .order("created_at", { ascending: false });
+
+  const matches = matchesRaw as MatchWithProfiles[] | null;
 
   return (
     <div className="pb-20 md:pl-52 md:pb-6">
@@ -47,10 +49,8 @@ export default async function MatchesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {matches.map((match) => {
-            const other =
-              match.user_a_id === user.id
-                ? (match.profile_b as { id: string; full_name: string; profile_picture_url: string | null; location: string; gender: string })
-                : (match.profile_a as { id: string; full_name: string; profile_picture_url: string | null; location: string; gender: string });
+            const other: OtherProfile | null =
+              match.user_a_id === user.id ? match.profile_b : match.profile_a;
 
             if (!other) return null;
 
@@ -59,7 +59,6 @@ export default async function MatchesPage() {
                 key={match.id}
                 className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
               >
-                {/* Avatar */}
                 <div className="relative h-48 bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center">
                   {other.profile_picture_url ? (
                     <Image
