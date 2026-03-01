@@ -46,30 +46,74 @@ export interface Message {
 
 // ──────────────────────────────────────────────────────────────
 // Supabase Database type (used with createClient<Database>)
+// All five keys on the schema object are required by @supabase/supabase-js v2
+// to satisfy GenericSchema — omitting any causes Insert/Update to collapse to `never`.
 // ──────────────────────────────────────────────────────────────
 export type Database = {
   public: {
     Tables: {
       profiles: {
         Row: Profile;
-        Insert: Omit<Profile, "created_at" | "updated_at">;
-        Update: Partial<Omit<Profile, "id" | "created_at" | "updated_at">>;
+        Insert: {
+          id: string;
+          full_name: string;
+          gender: Gender;
+          preference: Preference;
+          birth_date: string;
+          location: string;
+          bio?: string | null;
+          profile_picture_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          full_name?: string;
+          bio?: string | null;
+          gender?: Gender;
+          preference?: Preference;
+          birth_date?: string;
+          location?: string;
+          profile_picture_url?: string | null;
+        };
       };
       interests: {
         Row: Interest;
-        Insert: Omit<Interest, "id" | "created_at">;
-        Update: Partial<Pick<Interest, "action">>;
+        Insert: {
+          from_user_id: string;
+          to_user_id: string;
+          action: InterestAction;
+          id?: string;
+          created_at?: string;
+        };
+        Update: {
+          action?: InterestAction;
+        };
       };
       matches: {
         Row: Match;
-        Insert: Omit<Match, "id" | "created_at">;
-        Update: never;
+        Insert: {
+          user_a_id: string;
+          user_b_id: string;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
       };
       messages: {
         Row: Message;
-        Insert: Omit<Message, "id" | "created_at">;
-        Update: never;
+        Insert: {
+          match_id: string;
+          sender_id: string;
+          content: string;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
