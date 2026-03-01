@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf8f6;
+  --foreground: #1a1a2e;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Smooth card transitions */
+.card-enter {
+  animation: cardEnter 0.3s ease-out;
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* Custom scrollbar for chat */
+.chat-scroll::-webkit-scrollbar { width: 4px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.chat-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
