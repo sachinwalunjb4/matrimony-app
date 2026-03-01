@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrimony App - Find Your Life Partner</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💍 Matrimony App</h1>
+            <p class="tagline">Find Your Perfect Life Partner</p>
+        </header>
+
+        <main>
+            <section class="search-section">
+                <h2>Browse Profiles</h2>
+                <div class="filters">
+                    <input type="text" id="searchInput" placeholder="Search by name or location...">
+                    <select id="genderFilter">
+                        <option value="">All Genders</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="profiles-section">
+                <div id="profilesContainer" class="profiles-grid">
+                    <!-- Profiles will be loaded here dynamically -->
+                </div>
+            </section>
+
+            <section class="add-profile-section">
+                <h2>Create Your Profile</h2>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="occupation">Occupation:</label>
+                        <input type="text" id="occupation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="education">Education:</label>
+                        <input type="text" id="education" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Bio:</label>
+                        <textarea id="bio" rows="3" required></textarea>
+                    </div>
+                    <button type="submit">Create Profile</button>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Matrimony App. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
