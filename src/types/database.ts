@@ -16,6 +16,7 @@ export interface Profile {
   preference: Preference;
   birth_date: string; // ISO date string
   location: string;
+  address: string | null;
   profile_picture_url: string | null;
   created_at: string;
   updated_at: string;
@@ -76,6 +77,7 @@ export type Database = {
           birth_date: string;
           location: string;
           bio?: string | null;
+          address?: string | null;
           profile_picture_url?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -87,6 +89,7 @@ export type Database = {
           preference?: Preference;
           birth_date?: string;
           location?: string;
+          address?: string | null;
           profile_picture_url?: string | null;
         };
       };

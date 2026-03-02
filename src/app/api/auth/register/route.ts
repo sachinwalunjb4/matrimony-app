@@ -15,7 +15,7 @@ function createAdminClient() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { email, password, full_name, gender, preference, birth_date, location, bio } =
+  const { email, password, full_name, gender, preference, birth_date, location, bio, address } =
     body as {
       email: string;
       password: string;
@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       birth_date: string;
       location: string;
       bio?: string;
+      address?: string;
     };
 
   // Basic validation
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
     birth_date,
     location,
     bio: bio || null,
+    address: address || null,
     profile_picture_url: null,
   };
 

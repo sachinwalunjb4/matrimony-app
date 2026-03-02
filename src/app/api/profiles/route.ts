@@ -39,7 +39,7 @@ export async function PATCH(request: Request) {
 
   // Whitelist updatable fields — never let the client touch id/created_at
   const allowed: (keyof ProfileUpdate)[] = [
-    "full_name", "bio", "gender", "preference", "birth_date", "location", "profile_picture_url",
+    "full_name", "bio", "gender", "preference", "birth_date", "location", "address", "profile_picture_url",
   ];
   const update = Object.fromEntries(
     Object.entries(body).filter(([key]) => allowed.includes(key as keyof ProfileUpdate))

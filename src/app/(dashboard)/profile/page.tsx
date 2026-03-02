@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, MapPin, Calendar, Save, Loader2, Camera } from "lucide-react";
+import { User, MapPin, Calendar, Save, Loader2, Camera, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Gender, Preference } from "@/types/database";
 
@@ -64,6 +64,7 @@ export default function ProfilePage() {
         preference: profile.preference,
         birth_date: profile.birth_date,
         location: profile.location,
+        address: profile.address,
       }),
     });
 
@@ -224,6 +225,20 @@ export default function ProfilePage() {
               required
               value={profile.location}
               onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300 text-sm"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <div className="relative">
+            <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={profile.address ?? ""}
+              onChange={(e) => setProfile({ ...profile, address: e.target.value || null })}
+              placeholder="Street, City, State"
               className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300 text-sm"
             />
           </div>
