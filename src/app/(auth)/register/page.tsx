@@ -81,7 +81,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
         <div className="flex items-center gap-2 mb-8">
           <Heart className="w-7 h-7 text-rose-500 fill-rose-500" />
-          <span className="text-xl font-bold text-rose-600">Bandhan</span>
+          <span className="text-xl font-bold text-rose-600">Marathi Bandhan</span>
           <span className="ml-auto text-xs text-gray-400">Step {step} of 2</span>
         </div>
 

@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "Bandhan — Find Your Life Partner",
+  title: "Marathi Bandhan — Find Your Life Partner",
   description:
     "A modern matrimony platform to help you find meaningful, lasting connections.",
 };

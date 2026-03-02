@@ -11,7 +11,7 @@ export default function LandingPage() {
       <div className="text-center max-w-2xl">
         <div className="flex items-center justify-center gap-2 mb-6">
           <Heart className="w-10 h-10 text-rose-500 fill-rose-500" />
-          <span className="text-3xl font-bold text-rose-600">Bandhan</span>
+          <span className="text-3xl font-bold text-rose-600">Marathi Bandhan</span>
         </div>
         <h1 className="text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
           Find Your{" "}

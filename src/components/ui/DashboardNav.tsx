@@ -33,7 +33,7 @@ export default function DashboardNav({ userId }: { userId: string }) {
       <header className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-2">
           <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
-          <span className="font-bold text-rose-600 text-lg">Bandhan</span>
+          <span className="font-bold text-rose-600 text-lg">Marathi Bandhan</span>
         </div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
