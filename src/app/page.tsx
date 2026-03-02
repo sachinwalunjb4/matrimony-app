@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function LandingPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-pink-50 px-4">
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       <div className="text-center max-w-2xl">
         <div className="flex items-center justify-center gap-2 mb-6">
           <Heart className="w-10 h-10 text-rose-500 fill-rose-500" />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart, Mail, Lock, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-50 px-4">
+      <div className="fixed top-4 right-4 z-50"><ThemeToggle /></div>
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
         <div className="flex items-center gap-2 mb-8">
           <Heart className="w-7 h-7 text-rose-500 fill-rose-500" />

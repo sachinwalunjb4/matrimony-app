@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Heart, Search, MessageCircle, User, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navItems = [
   { href: "/browse",  label: "Browse",   icon: Search },
@@ -34,13 +35,16 @@ export default function DashboardNav({ userId }: { userId: string }) {
           <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
           <span className="font-bold text-rose-600 text-lg">Bandhan</span>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          Sign out
-        </button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-500 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Sign out</span>
+          </button>
+        </div>
       </header>
 
       {/* Bottom nav (mobile-first) */}
